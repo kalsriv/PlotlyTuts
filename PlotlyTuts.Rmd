@@ -1,0 +1,125 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+library(plotly)
+library(dplyr)
+library(mltools)
+library(data.table)
+library(caret)
+library(rpart)
+library(rpart.plot)
+library(skimr)
+```
+
+Practising dplyr
+Although ggplot2 is provides a great opportunity to visualize the data, plotly provides the plots in an interactive images.
+Import the data below
+
+```{r}
+NKcellDF <- read.csv('/home/srivastava/Documents/NK_Cells.csv')
+NKcellDF %>% glimpse()
+```
+check he data little more
+```{r}
+skimmed <- skim(NKcellDF)
+View(skimmed)
+```
+```{r}
+colnames(NKcellDF)
+```
+
+```{r}
+fig <- plot_ly(data = NKcellDF, x = ~CD16plus.CD56int.CD226plus.NK.Cells, y = ~CD16..CD56hi.CD226plus.NK.Cells)
+fig
+```
+```{r}
+fig <- plot_ly(data = NKcellDF, x = ~CD16plus.CD56int.CD226plus.NK.Cells, y = ~CD16..CD56hi.CD226plus.NK.Cells,
+               marker = list(size = 10,
+                             color = 'blue',
+                             line = list(color = 'green',
+                                         width = 2)))
+fig <- fig %>% layout(title = 'Scatter Plot Showing Regression',
+         yaxis = list(zeroline = FALSE),
+         xaxis = list(zeroline = FALSE))
+
+fig
+```
+
+```{r}
+fig <- plot_ly(data = NKcellDF, x = ~CD16plus.CD56int.CD226plus.NK.Cells, y = ~CD16..CD56hi.CD226plus.NK.Cells, color = ~CD16..CD56hi.CD244plus..NK.Cells, size = ~CD16..CD56hi.NKp30plus..NK.Cells )
+
+fig <- fig %>% layout(title = 'Scatter Plot Showing Regression',
+         yaxis = list(zeroline = FALSE),
+         xaxis = list(zeroline = FALSE))
+
+fig
+```
+```{r}
+fig <- plot_ly(data = NKcellDF, x = ~CD16plus.CD56int.CD226plus.NK.Cells, y = ~CD16..CD56hi.CD226plus.NK.Cells, type = 'scatter', mode = 'lines')
+
+
+
+fig
+```
+
+```{r}
+fig <- plot_ly(data = NKcellDF, x = ~CD16plus.CD56int.CD226plus.NK.Cells, color = ~Status, type = "box")
+#fig <- plot_ly(midwest, x = ~percollege, color = ~state, type = "box")
+fig
+```
+```{r}
+fig <- plot_ly(data = NKcellDF, x = ~CD16plus.CD56int.CD226plus.NK.Cells, y = ~Status)
+fig
+```
+```{r}
+fig <- plot_ly(data = NKcellDF, x = ~CD16plus.CD56int.CD226plus.NK.Cells, y = ~Status, type = "box")
+fig
+#Trace type could be one of the following: 'bar', 'barpolar', 'box', 'candlestick', 'carpet', 'choropleth', 'choroplethmapbox', 'cone', 'contour', 'contourcarpet', 'densitymapbox', 'funnel', 'funnelarea', 'heatmap', 'heatmapgl', 'histogram', 'histogram2d', 'histogram2dcontour', 'icicle', 'image', 'indicator', 'isosurface', 'mesh3d', 'ohlc', 'parcats', 'parcoords', 'pie', 'pointcloud', 'sankey', 'scatter', 'scatter3d', 'scattercarpet', 'scattergeo', 'scattergl', 'scattermapbox', 'scatterpolar', 'scatterpolargl', 'scatterternary', 'splom', 'streamtube', 'sunburst', 'surface', 'table', 'treemap', 'violin', 'volume', 'waterfall'
+```
+```{r}
+listeX <- c('bar', 'barpolar', 'box', 'candlestick', 'carpet', 'choropleth', 'choroplethmapbox', 'cone', 'contour', 'contourcarpet', 'densitymapbox', 'funnel', 'funnelarea', 'heatmap', 'heatmapgl', 'histogram', 'histogram2d', 'histogram2dcontour', 'icicle', 'image', 'indicator', 'isosurface', 'mesh3d', 'ohlc', 'parcats', 'parcoords', 'pie', 'pointcloud', 'sankey', 'scatter', 'scatter3d', 'scattercarpet', 'scattergeo', 'scattergl', 'scattermapbox', 'scatterpolar', 'scatterpolargl', 'scatterternary', 'splom', 'streamtube', 'sunburst', 'surface', 'table', 'treemap', 'violin', 'volume', 'waterfall')
+lenX <- length(listeX)
+
+for (x in 1:lenX) {
+  fig <- plot_ly(data = NKcellDF, x = ~CD16plus.CD56int.CD226plus.NK.Cells, title = listeX[x], y = ~Status, type = listeX[x])
+  print(fig)
+  }
+#Just to check what can be printed
+```
+
+
+
+```{r}
+fig <- plot_ly(data = NKcellDF, x = ~CD16plus.CD56int.CD226plus.NK.Cells, y = ~Status, color = ~Donor, colors = "Accent")
+fig
+
+```
+```{r}
+fig1 <- plot_ly(data = NKcellDF, x = ~CD16plus.CD56int.CD226plus.NK.Cells, y = ~Status, color = ~Donor, colors = "Accent")
+fig2 <- plot_ly(data = NKcellDF, x = ~CD16..CD56hi.CD57...NK.Cells, y = ~Status, color = ~Donor, colors = "Accent")
+fig1
+fig2
+#"" 
+```
+```{r, warning=FALSE}
+library(htmlwidgets)
+saveWidget(fig1, "fig1.html", selfcontained = F, libdir = "lib")
+saveWidget(fig2, "fig2.html", selfcontained = F, libdir = "lib")
+```
+
+```{r, warning=FALSE}
+library(htmlwidgets)
+saveWidget(fig1, "fig1.pdf", selfcontained = F, libdir = "lib")
+saveWidget(fig2, "fig2.pdf", selfcontained = F, libdir = "lib")
+#Failed to work
+```
+```{r}
+p <- ggplot(NKcellDF, aes(x = CD16plus.CD56int.CD226plus.NK.Cells, y = Status)) + geom_boxplot(notch=TRUE)
+#p
+ggplotly(p)
+```
+
+
+
